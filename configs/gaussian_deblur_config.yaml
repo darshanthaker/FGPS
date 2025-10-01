@@ -1,0 +1,26 @@
+conditioning:
+  method: fgps
+  params:
+    scale: 0.4 # only used if scale_schedule is 'fixed'.
+    # Frequency schedule.
+    start_bound: 10
+    end_bound: 75
+    schedule: exponential
+    # Step size schedule.
+    scale_start: 3.0
+    scale_end: 0.6
+    scale_schedule: linear ##fixed
+
+data:
+  name: ffhq
+  root: ./data/samples/
+
+measurement:
+  operator:
+    name: gaussian_blur
+    kernel_size: 61
+    intensity: 3.0
+  
+  noise: 
+    name: gaussian
+    sigma: 0.05

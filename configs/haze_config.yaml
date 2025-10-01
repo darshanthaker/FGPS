@@ -1,0 +1,25 @@
+conditioning:
+  method: fgps
+  params:
+    scale: 3 # only used if scale_schedule is 'fixed'.
+    # Frequency schedule.
+    start_bound: 10
+    end_bound: 75
+    schedule: exponential
+    # Step size schedule.
+    scale_start: 5.0
+    scale_end: 1.0
+    scale_schedule: linear
+
+data:
+  name: ffhq
+  root: ./data/samples/
+
+measurement:
+  operator:
+    name: haze
+    beta: 1
+
+  noise: 
+    name: gaussian
+    sigma: 0.05
