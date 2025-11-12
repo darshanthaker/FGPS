@@ -107,12 +107,11 @@ def main():
 
     for index, image in enumerate(loader):
         fname = str(index).zfill(5) + '.png'
-        if data_config['name'] == 'imagenet'
+        if data_config['name'] == 'imagenet':
             image, label = image
             label = label.to(device)
         else:
             label = None
-        image = Image.open(image_path)
         clean_images = image.to(device)
 
         y = operator.forward(clean_images)
