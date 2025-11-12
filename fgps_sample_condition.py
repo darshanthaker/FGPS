@@ -117,7 +117,6 @@ def main():
         y = operator.forward(clean_images)
         y_n = noiser(y)
         plotted_yn = clear_color(y_n)
-        cond_method.init_mags(y_n)
         # Sampling
         x_start = torch.randn(clean_images.shape, device=device).requires_grad_()
         sample = sample_fn(x_start=x_start, measurement=y_n, record=True, save_root=out_path, label=label)
