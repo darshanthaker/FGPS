@@ -117,6 +117,8 @@ class FGPS(ConditioningMethod):
             self.scale = kwargs.get('scale', 1.0)
         else:
             time_steps = np.linspace(0, T, T)
+            a = kwargs.get('scale_start', None)    # Initial value
+            b = kwargs.get('scale_end', None)    # Minimum value
             annealing_values = 0.5 * (a + b) + 0.5 * (a - b) * np.cos(np.pi * time_steps / T)
             self.scale = torch.tensor(annealing_values).to("cuda")
             
