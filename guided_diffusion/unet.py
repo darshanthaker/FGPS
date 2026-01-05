@@ -7,7 +7,6 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 import functools
-import matplotlib.pyplot as plt
 
 from .fp16_util import convert_module_to_f16, convert_module_to_f32
 from .nn import (
@@ -731,9 +730,6 @@ class UNetModel(nn.Module):
         hs = []
         emb = self.time_embed(timestep_embedding(timesteps, self.model_channels))
 
-        plot_attention = int(timesteps.item()) in [249*4, 199*4, 149*4, 99*4, 49*4, 0]
-        A_maps = dict()
-
         if self.num_classes is not None:
             assert y.shape == (x.shape[0],)
             emb = emb + self.label_emb(y)
@@ -741,36 +737,12 @@ class UNetModel(nn.Module):
         h = x.type(self.dtype)
         for (idx, module) in enumerate(self.input_blocks):
             h = module(h, emb)
-            if plot_attention:
-                A = self.get_attention(module)
-                if A is not None:
-                    A_maps['input{}'.format(idx)] = A
             hs.append(h)
         h = self.middle_block(h, emb)
-        if plot_attention:
-            A = self.get_attention(self.middle_block)
-            A_maps['middle'] = A
         for (idx, module) in enumerate(self.output_blocks):
             h = th.cat([h, hs.pop()], dim=1)
             h = module(h, emb)
-            if plot_attention:
-                A = self.get_attention(module)
-                if A is not None:
-                    A_maps['out{}'.format(idx)] = A
         h = h.type(x.dtype)
-        if plot_attention:
-            num_maps = len(A_maps)
-            cols = 3  # Number of columns (adjust as needed)
-            rows = (num_maps + cols - 1) // cols  # Calculate needed rows
-
-            plt.figure(figsize=(15, 5 * rows))
-            for idx, (key, matrix) in enumerate(A_maps.items(), 1):
-                plt.subplot(rows, cols, idx)
-                plt.imshow(matrix, cmap='viridis')
-                plt.title(key)
-            plt.tight_layout()
-            plt.savefig('test_images/heatmap_{}.png'.format(int(timesteps.item())))
-            plt.close()
         return self.out(h)
 
     def encoder_embed(self, x, timesteps, y=None):
